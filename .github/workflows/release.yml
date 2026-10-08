@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "src/**"
+      - "scripts/**"
       - "index.html"
       - "package.json"
       - "package-lock.json"
@@ -38,6 +39,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Test deployment manifest update
+        run: npm test
 
       - name: Lint
         run: npm run lint
@@ -76,14 +80,4 @@ jobs:
       - name: Update desired image in Git
         env:
           IMAGE_REF: ${{ steps.image.outputs.image_ref }}
-        run: |
-          sed -i -E "s#^([[:space:]]*image:).*#\1 ${IMAGE_REF}#" deploy/deployment.yaml
-          if git diff --quiet -- deploy/deployment.yaml; then
-            echo "Deployment image is already current."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add deploy/deployment.yaml
-          git commit -m "chore: deploy ${GITHUB_SHA}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+        run: node scripts/update-deployment.mjs
