@@ -1,0 +1,89 @@
+name: Build and publish release dashboard
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "index.html"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig*.json"
+      - "vite.config.ts"
+      - "Dockerfile"
+      - ".github/workflows/release.yml"
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    name: Build, publish, and update desired state
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24.21.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Resolve image name
+        id: image_name
+        shell: bash
+        run: echo "name=ghcr.io/$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Build static app
+        run: npm run build
+        env:
+          VITE_COMMIT_SHA: ${{ github.sha }}
+          VITE_IMAGE_NAME: ${{ steps.image_name.outputs.name }}
+
+      - name: Log in to GHCR
+        run: echo "${GITHUB_TOKEN}" | docker login ghcr.io --username "${GITHUB_ACTOR}" --password-stdin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish image
+        id: image
+        shell: bash
+        env:
+          IMAGE_NAME: ${{ steps.image_name.outputs.name }}
+        run: |
+          image_ref="${IMAGE_NAME}:${GITHUB_SHA}"
+          docker build \
+            --build-arg "SOURCE_REPOSITORY=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+            --build-arg "SOURCE_REVISION=${GITHUB_SHA}" \
+            --platform linux/amd64 \
+            --tag "$image_ref" .
+          docker push "$image_ref"
+          echo "image_ref=$image_ref" >> "$GITHUB_OUTPUT"
+
+      - name: Update desired image in Git
+        env:
+          IMAGE_REF: ${{ steps.image.outputs.image_ref }}
+        run: |
+          sed -i -E "s#^([[:space:]]*image:).*#\1 ${IMAGE_REF}#" deploy/deployment.yaml
+          if git diff --quiet -- deploy/deployment.yaml; then
+            echo "Deployment image is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add deploy/deployment.yaml
+          git commit -m "chore: deploy ${GITHUB_SHA}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
