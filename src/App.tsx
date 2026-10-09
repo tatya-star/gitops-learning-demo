@@ -45,10 +45,10 @@ function App() {
   }
 
   const pipelineSteps = [
-    { label: 'Source', detail: 'GitHub · main', state: 'complete' },
-    { label: 'Build', detail: isDeployedBuild ? 'Image built' : 'Local preview', state: isDeployedBuild ? 'complete' : 'current' },
-    { label: 'Publish', detail: isDeployedBuild ? 'GHCR · public' : 'Waiting for push', state: isDeployedBuild ? 'complete' : 'pending' },
-    { label: 'Sync', detail: isDeployedBuild ? 'Argo CD · synced' : 'Local cluster', state: isDeployedBuild ? 'complete' : 'pending' },
+    { label: 'Source', detail: isDeployedBuild ? 'Commit embedded' : 'Workspace', state: isDeployedBuild ? 'complete' : 'current' },
+    { label: 'Build', detail: isDeployedBuild ? 'Static assets' : 'Local preview', state: isDeployedBuild ? 'complete' : 'current' },
+    { label: 'Publish', detail: 'Image reference', state: 'pending' },
+    { label: 'Sync', detail: 'View in Argo CD', state: 'pending' },
   ]
 
   return (
@@ -68,11 +68,11 @@ function App() {
 
         <div className="sidebar-spacer" />
 
-        <section className="cluster-card" aria-label="Connected local cluster">
-          <div className="cluster-card-heading"><span className="status-dot online" />LOCAL CLUSTER</div>
+        <section className="cluster-card" aria-label="Local deployment target">
+          <div className="cluster-card-heading"><span className="status-dot" />LOCAL TARGET</div>
           <strong>docker-desktop</strong>
-          <span>Kubernetes 1.34.3</span>
-          <div className="cluster-footer"><span><HardDrive size={14} /> 1 node</span><span>Ready</span></div>
+          <span>Kubernetes target</span>
+          <div className="cluster-footer"><span><HardDrive size={14} />Static app</span><span>Git managed</span></div>
         </section>
 
         <div className="sidebar-footnote"><span className="mode-square" />Learning environment</div>
@@ -82,7 +82,7 @@ function App() {
         <header className="topbar">
           <div className="breadcrumb"><span>Workspaces</span><span className="crumb-slash">/</span><strong>GitOps demo</strong></div>
           <div className="topbar-right">
-            <span className="connection-pill"><span className="status-dot online" />Cluster connected</span>
+            <span className="connection-pill"><span className="status-dot" />Local demo</span>
             <span className="avatar" aria-label="Demo workspace">D</span>
           </div>
         </header>
@@ -105,7 +105,7 @@ function App() {
               <h2 id="hero-title">One change.<br /><span>All the way live.</span></h2>
               <p>Push a change to GitHub and follow it through build, image publish, and automatic cluster sync.</p>
               <div className="hero-bottom">
-                <span className="hero-caption"><Zap size={14} /> AUTO-SYNC ENABLED</span>
+                <span className="hero-caption"><Zap size={14} /> GITOPS WORKFLOW</span>
                 <span className="hero-caption-divider" />
                 <span className="hero-caption">LOCAL · DOCKER DESKTOP</span>
               </div>
@@ -124,9 +124,9 @@ function App() {
 
           <section className="release-overview" id="release-path" aria-labelledby="release-title">
             <div className="section-heading">
-              <div><span className="section-kicker">DEPLOYMENT</span><h2 id="release-title">Release path</h2></div>
+              <div><span className="section-kicker">BUILD METADATA</span><h2 id="release-title">Release path</h2></div>
               <span className={isDeployedBuild ? 'release-state synced' : 'release-state preview'}>
-                <span className="status-dot" />{isDeployedBuild ? 'Synced' : 'Local preview'}
+                <span className="status-dot" />{isDeployedBuild ? 'Versioned build' : 'Local preview'}
               </span>
             </div>
 
@@ -154,11 +154,11 @@ function App() {
               <div className="release-version-row">
                 <code className="version-badge">{shortVersion}</code>
                 <span className={isDeployedBuild ? 'version-state live' : 'version-state local'}>
-                  <span className="status-dot" />{isDeployedBuild ? 'Deployed from main' : 'Workspace build'}
+                  <span className="status-dot" />{isDeployedBuild ? 'Build metadata' : 'Workspace build'}
                 </span>
               </div>
               <div className="release-details">
-                <div className="detail-row"><span>Image</span><code>{isDeployedBuild ? `${imageName}:${commitSha}` : `${imageName}:<commit-sha>`}</code></div>
+                <div className="detail-row"><span>Image</span><code className="image-reference">{isDeployedBuild ? `${imageName}:${commitSha}` : `${imageName}:<commit-sha>`}</code></div>
                 <div className="detail-row"><span>Namespace</span><code>gitops-demo</code></div>
                 <div className="detail-row"><span>Last health check</span><span className="detail-value">{lastCheck ?? 'Not run yet'}</span></div>
               </div>
@@ -190,8 +190,8 @@ function App() {
           </div>
 
           <footer className="page-footer">
-            <span><span className="status-dot online" />Docker Desktop · Kubernetes 1.34.3</span>
-            <span>Argo CD auto-sync <span className="footer-divider">·</span> <a href="https://localhost:8080" target="_blank" rel="noreferrer">View sync status <ArrowUpRight size={13} /></a></span>
+            <span><span className="status-dot" />Docker Desktop · local target</span>
+            <span>Deployment status <span className="footer-divider">·</span> <a href="https://localhost:8080" target="_blank" rel="noreferrer">View in Argo CD <ArrowUpRight size={13} /></a></span>
           </footer>
         </div>
       </main>

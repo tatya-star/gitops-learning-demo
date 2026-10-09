@@ -199,6 +199,7 @@
 .release-details { display: grid; border-top: 1px solid #e8eeea; }
 .detail-row { display: grid; min-width: 0; grid-template-columns: 116px minmax(0, 1fr); align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid #e8eeea; color: #7a877f; font-size: 10px; }
 .detail-row code, .detail-value { overflow: hidden; color: #35483d; font-family: var(--font-mono); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.detail-row .image-reference { white-space: normal; overflow-wrap: anywhere; }
 .release-note { display: flex; align-items: start; gap: 7px; margin-top: 13px; color: #748179; font-size: 10px; line-height: 1.45; }
 .release-note svg { flex: 0 0 auto; color: #9b783f; }
 

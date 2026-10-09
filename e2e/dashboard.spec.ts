@@ -37,6 +37,7 @@ async function expectFits(page: Page) {
     page.getByRole('button', { name: 'Run health check', exact: true }),
     page.getByRole('button', { name: 'Simulate recovery', exact: true }),
     page.getByRole('status'),
+    page.locator('.image-reference'),
   ]) {
     await expect(element).toBeVisible()
     await expect.poll(() => element.evaluate((node) => {
@@ -60,7 +61,15 @@ async function expectTimestamp(page: Page) {
 test.beforeEach(async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
-  await page.goto('/', { waitUntil: 'networkidle' })
+  await expect.poll(async () => {
+    try {
+      return (await page.request.get('/', { timeout: 2000 })).status()
+    } catch {
+      return 0
+    }
+  }, { timeout: 15000 }).toBe(200)
+  const response = await page.goto('/', { waitUntil: 'networkidle' })
+  expect(response?.status()).toBe(200)
   await page.evaluate(() => document.fonts.ready)
   const requests: string[] = []
   const listener = (request: Request) => requests.push(`${request.method()} ${request.url()}`)
@@ -83,6 +92,9 @@ test.afterEach(async ({ page }) => {
 
 test('initial render has degraded simulation and the embedded release identity', async ({ page }) => {
   await expect(page.getByRole('status')).toHaveAttribute('aria-live', 'polite')
+  await expect(page.getByText('Versioned build', { exact: true })).toBeVisible()
+  await expect(page.getByText('Build metadata', { exact: true })).toBeVisible()
+  await expect(page.getByText(/^(Synced|Cluster connected|Deployed from main|GHCR · public|Argo CD · synced|Ready|1 node)$/)).toHaveCount(0)
 })
 
 test('health check before recovery reports two passing checks and stays degraded', async ({ page }) => {

@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "src/**"
+      - "public/**"
       - "scripts/**"
       - "e2e/**"
       - "index.html"
@@ -15,6 +16,7 @@ on:
       - "vite.config.ts"
       - "playwright.config.ts"
       - "Dockerfile"
+      - ".dockerignore"
       - ".github/workflows/release.yml"
 
 permissions:
@@ -82,6 +84,10 @@ jobs:
             --build-arg "SOURCE_REVISION=${GITHUB_SHA}" \
             --platform linux/amd64 \
             --tag "$image_ref" .
+          candidate_name="release-check-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          trap 'docker rm -f "$candidate_name" >/dev/null 2>&1 || true' EXIT
+          docker run --detach --name "$candidate_name" --publish 127.0.0.1:4180:80 "$image_ref"
+          RELEASE_CANDIDATE_URL=http://127.0.0.1:4180 npm run test:e2e -- --project=desktop --grep "initial render"
           docker push "$image_ref"
           echo "image_ref=$image_ref" >> "$GITHUB_OUTPUT"
 
