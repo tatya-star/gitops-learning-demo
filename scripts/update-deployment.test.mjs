@@ -28,6 +28,7 @@ function createRepository(context, manifest = originalManifest) {
   git(temporaryDirectory, "init", "--bare", remotePath);
   mkdirSync(workingPath);
   git(workingPath, "init", "-b", "main");
+  git(workingPath, "config", "core.autocrlf", "false");
   git(workingPath, "config", "user.name", "Test User");
   git(workingPath, "config", "user.email", "test@example.invalid");
   mkdirSync(path.join(workingPath, "deploy"));

@@ -7,11 +7,13 @@ on:
     paths:
       - "src/**"
       - "scripts/**"
+      - "e2e/**"
       - "index.html"
       - "package.json"
       - "package-lock.json"
       - "tsconfig*.json"
       - "vite.config.ts"
+      - "playwright.config.ts"
       - "Dockerfile"
       - ".github/workflows/release.yml"
 
@@ -45,6 +47,12 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Install Chromium and Linux libraries
+        run: npx playwright install --with-deps chromium
+
+      - name: Test dashboard interactions
+        run: npm run test:e2e
 
       - name: Resolve image name
         id: image_name

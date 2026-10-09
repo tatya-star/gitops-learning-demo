@@ -22,6 +22,23 @@ docker build -t gitops-learning-demo:local .
 
 The dashboard's health-check and recovery buttons change simulated UI state only. Git changes, not dashboard buttons, drive deployments.
 
+## Tests
+
+Install the locked dependencies and Chromium, then run both test suites:
+
+```powershell
+npm ci
+npx playwright install chromium
+npm test
+npm run test:e2e
+```
+
+On Linux, use `npx playwright install --with-deps chromium` to also install the browser's system libraries. No Kubernetes access is needed for either suite.
+
+`npm test` runs the deployment-manifest tests. `npm run test:e2e` builds a known SHA-tagged fixture and starts its own strict preview at `http://127.0.0.1:4179`; keep that port free. Headless Chromium checks the dashboard at 1280px and 375px widths, including pointer/keyboard controls, simulation feedback, unchanged release identity, no button-triggered requests, and reset on reload. Failure screenshots and traces are saved in `test-results/`.
+
+The browser build replaces local `dist/` with test fixtures. Run `npm run build` afterward to restore normal build output; fixture environment variables are scoped to the test server. CI runs both suites before publication and then rebuilds with the real commit SHA and GHCR image name before publishing or updating the manifest.
+
 ## First GitHub release
 
 The empty public repository is [tatya-star/gitops-learning-demo](https://github.com/tatya-star/gitops-learning-demo). From the workspace root, initialize and push only the app folder:
