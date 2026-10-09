@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: dashboard
-          image: ghcr.io/tatya-star/gitops-learning-demo:720ac6301209d5a03d1eb5bdbc1bf71d849ee1c1
+          image: ghcr.io/tatya-star/gitops-learning-demo:1911f81314ec8344e80be350b291f97d9069d5ea
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
