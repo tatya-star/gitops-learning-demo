@@ -91,7 +91,7 @@ function App() {
           <section className="page-heading">
             <div>
               <p className="eyebrow">RELEASE OPERATIONS <span className="eyebrow-divider">/</span> LOCAL</p>
-              <h1>Release dashboard</h1>
+              <h1>GitOps release dashboard</h1>
               <p className="page-subtitle">A clear view from the commit to the cluster.</p>
             </div>
             <a className="external-link" href="https://localhost:8080" target="_blank" rel="noreferrer">
