@@ -61,7 +61,7 @@ function App() {
 
         <div className="sidebar-label">WORKSPACE</div>
         <nav className="main-nav" aria-label="Main navigation">
-          <a className="nav-item active" href="#overview"><Layers3 size={17} />Overview</a>
+          <a className="nav-item active" href="#overview" aria-current="page"><Layers3 size={17} />Overview</a>
           <a className="nav-item" href="#release-path"><Workflow size={17} />Release path</a>
           <a className="nav-item" href="#health"><Activity size={17} />Service health</a>
         </nav>

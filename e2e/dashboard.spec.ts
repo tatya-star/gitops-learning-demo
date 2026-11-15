@@ -91,6 +91,11 @@ test.afterEach(async ({ page }) => {
 })
 
 test('initial render has degraded simulation and the embedded release identity', async ({ page }) => {
+  await expect(page.locator('meta[name="color-scheme"]')).toHaveAttribute('content', 'dark')
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#080808')
+  await expect(page.locator('.main-content')).toHaveCSS('background-color', 'rgb(31, 31, 31)')
+  await expect(page.locator('.hero-band')).toHaveCSS('background-color', 'rgb(38, 38, 38)')
+  await expect(page.getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page')
   await expect(page.getByRole('status')).toHaveAttribute('aria-live', 'polite')
   await expect(page.getByText('Versioned build', { exact: true })).toBeVisible()
   await expect(page.getByText('Build metadata', { exact: true })).toBeVisible()

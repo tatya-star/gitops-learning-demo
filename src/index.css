@@ -2,13 +2,32 @@
 
 :root {
   font-family: 'Space Grotesk', 'Avenir Next', 'Segoe UI', sans-serif;
-  color: #20342b;
-  background: #f1f5f2;
+  color-scheme: dark;
+  color: #c8c8c8;
+  background: #1f1f1f;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 400;
+  --color-shell: #080808;
+  --color-canvas: #1f1f1f;
+  --color-surface: #262626;
+  --color-elevated: #2e2e2e;
+  --color-muted: #363636;
+  --color-selected: #3c3c3c;
+  --color-border: #3c3c3c;
+  --color-border-strong: #5a5a5a;
+  --color-text: #c8c8c8;
+  --color-text-muted: #a3a3a3;
+  --color-text-dimmed: #909090;
+  --color-highlight: #fff;
+  --color-orange: #ec6602;
+  --color-orange-hover: #ff7a1a;
+  --color-petrol: #009999;
+  --color-petrol-text: #33cccc;
+  --color-success: #279b44;
+  --color-success-text: #5cc97a;
   --font-display: 'Space Grotesk', 'Avenir Next', 'Segoe UI', sans-serif;
   --font-mono: 'DM Mono', 'SFMono-Regular', Consolas, monospace;
 }
