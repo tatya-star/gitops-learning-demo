@@ -16,7 +16,7 @@ function lastCheck(page: Page) {
 }
 
 async function expectRelease(page: Page) {
-  await expect(page.getByRole('heading', { name: 'GitOps release dashboard', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'GitOps Dashboard', exact: true })).toBeVisible()
   const release = page.getByRole('region', { name: 'Current release' })
   await expect(release.getByText(testSha.slice(0, 7), { exact: true })).toBeVisible()
   await expect(release.getByText(`${testImage}:${testSha}`, { exact: true })).toHaveText(`${testImage}:${testSha}`)
